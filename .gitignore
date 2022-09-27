@@ -1,5 +1,6 @@
 # logs
 *.log
+.DS_Store
 
 *.local
 
@@ -13,14 +14,6 @@
 *.swp
 *~
 
-## Caffe
-# binary proto
-*.binaryproto
-*.caffemodel
-*.caffemodel.h5
-*.solverstate
-*.solverstate.h5
-
 # data file
 *.npy
 *.zip
@@ -29,13 +22,12 @@
 *leveldb
 *.hdf5
 
+# model checkpoint
+*.pt
+
 
 #image files
 *.tif
-
-#matlab
-.mat
-.save
 
 #compressed files
 .tar.gz
@@ -44,3 +36,7 @@
 .idea
 
 notebooks/outputs/*
+
+apps/radiology/model/*
+apps/radiology/logs/*
+apps/radiology/bin/*
