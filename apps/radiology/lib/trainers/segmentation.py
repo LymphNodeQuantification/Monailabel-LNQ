@@ -16,6 +16,7 @@ from lib.transforms.transforms import NormalizeLabelsInDatasetd
 from monai.handlers import TensorBoardImageHandler, from_engine
 from monai.inferers import SlidingWindowInferer
 from monai.losses import DiceCELoss
+from monai.losses import DiceLoss
 from monai.transforms import (
     Activationsd,
     AsDiscreted,
@@ -35,6 +36,7 @@ from monai.transforms import (
 
 from monailabel.tasks.train.basic_train import BasicTrainTask, Context
 from monailabel.tasks.train.utils import region_wise_metrics
+from monai.optimizers import Novograd
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +62,8 @@ class Segmentation(BasicTrainTask):
         return self._network
 
     def optimizer(self, context: Context):
-        return torch.optim.Adam(context.network.parameters(), lr=1e-3)
+        #return torch.optim.Adam(context.network.parameters(), lr=1e-3)
+        return torch.optim.AdamW(context.network.parameters(), lr=1e-5, weight_decay=1e-5)
 
     def loss_function(self, context: Context):
         return DiceCELoss(to_onehot_y=True, softmax=True)
