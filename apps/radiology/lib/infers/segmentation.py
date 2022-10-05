@@ -60,11 +60,12 @@ class Segmentation(InferTask):
             EnsureTyped(keys="image", device=data.get("device") if data else None),
             EnsureChannelFirstd(keys="image"),
             Spacingd(keys="image", pixdim=self.target_spacing),
-            ScaleIntensityRanged(keys="image", a_min=-175, a_max=250, b_min=0.0, b_max=1.0, clip=True),
+            ScaleIntensityRanged(keys="image", a_min=-400, a_max=1000, b_min=0.0, b_max=1.0, clip=True),
         ]
 
     def inferer(self, data=None) -> Inferer:
         return SlidingWindowInferer(roi_size=self.roi_size)
+        # return SlidingWindowInferer(roi_size=self.roi_size,sw_batch_size=8)
 
     def post_transforms(self, data=None) -> Sequence[Callable]:
         largest_cc = False if not data else data.get("largest_cc", False)
