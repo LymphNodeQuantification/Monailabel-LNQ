@@ -31,7 +31,17 @@ class Segmentation(TaskConfig):
 
         # Labels - DON'T INCLUDE BACKGROUND LABEL
         self.labels = {
-            "lymph node": 1,
+            "organs": 1,
+            "lungs": 2,
+            "spine": 3,
+            "cardiopulmonary": 4,
+            "brain": 5,
+            "guts": 6,
+            "bones": 7,
+            "hips": 8,
+            "face": 9,
+            "muscles": 10,
+            "lymphnodes": 10
         }
 
         # Number of input channels - 4 for BRATS and 1 for spleen
