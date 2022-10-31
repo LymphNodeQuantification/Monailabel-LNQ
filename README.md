@@ -7,7 +7,9 @@ It is originally from the [TCIA CT Lymph Nodes collection](https://wiki.cancerim
 After downloading the server can be started like this (assumes MONAI Label is already installed and working in your python environment).
 
 ```
-monailabel start_server --app ./Monailabel-LNQ/apps/radiology --studies tcia_lymphnode_monailabel --conf models segmentation
+
+monailabel start_server --app apps/radiology --studies datasets/tcia-ln10/imagesTr --conf models segmentation
+
 ```
 
 Note: this is a work-in-progress model that does not yet segment lymph nodes correctly.
@@ -32,7 +34,7 @@ Mapping for ln10 data:
             [42, 49, 4], # cardio-pulmonary
             [50, 50, 5], # brain
             [51, 57, 6], # guts
-            [58, 81, 7], # ribs
+            [58, 87, 7], # bones
             [88, 92, 8], # hips
             [93, 93, 9], # face
             [94, 103, 10], # muscles
