@@ -41,7 +41,7 @@ class Segmentation(TaskConfig):
             "hips": 8,
             "face": 9,
             "muscles": 10,
-            "lymphnodes": 10
+            "lymphnodes": 11
         }
 
         # Number of input channels - 4 for BRATS and 1 for spleen
