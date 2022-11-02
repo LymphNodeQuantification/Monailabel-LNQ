@@ -120,7 +120,7 @@ class Segmentation(BasicTrainTask):
             NormalizeLabelsInDatasetd(keys="label", label_names=self._labels),  # Specially for missing labels
             Spacingd(keys=("image", "label"), pixdim=self.target_spacing, mode=("bilinear", "nearest")),
             ScaleIntensityRanged(keys="image", a_min=-400, a_max=1000, b_min=0.0, b_max=1.0, clip=True),
-            EnsureTyped(keys=("image", "label")),
+            EnsureTyped(keys=("image", "label"), device=context.device),
             SelectItemsd(keys=("image", "label")),
         ]
 
