@@ -23,7 +23,7 @@ https://www.dropbox.com/sh/ish3ci1h9zkbbhu/AAC84tfHmQ5whW0HF-bqe5vGa?dl=0
 The three subdirectories contain:
 * *tcia-totalseg-ln* The [full]([url](https://github.com/wasserth/TotalSegmentator/blob/master/totalsegmentator/map_to_binary.py#L2-L106)) TotalSegmentator segmentations with the Lymph Node segment added as label 255
 * *tcia-totalseg-ln2* All TotalSegmentator segments are collapsed to the label value 1, and lymph nodes are label value 2
-* *tcia-totalseg-ln10* TotalSegmentator classes reduced to 20 label values according to the mapping below and lymph nodes are label 11
+* *tcia-totalseg-ln10* TotalSegmentator classes reduced to 10 label values according to the mapping below and lymph nodes are label 11
 
 Mapping for ln10 data:
 ```
