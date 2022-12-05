@@ -51,4 +51,4 @@ All segmentations are in nii.gz format.
 # Acknowledgements
 
 This work is supported by the US National Institutes of Health, National Cancer Institutes grant [5R01CA235589 Lymph Node Quantification System for Multisite Clinical Trials
-](https://reporter.nih.gov/search/9w2EcX30REWk0JwFTROtVw/project-details/10479822).
+](https://reporter.nih.gov/search/9w2EcX30REWk0JwFTROtVw/project-details/10479822).  Additional support provided by the [NCI Imaging Data Commons](https://portal.imaging.datacommons.cancer.gov/).  
