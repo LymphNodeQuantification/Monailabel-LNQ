@@ -62,8 +62,7 @@ class Segmentation(TaskConfig):
         """
         self.target_spacing = (1.0, 1.0, 1.0)  # target space for image
         # Setting ROI size should consider max width, height and depth of the images
-        self.roi_size = (64, 64, 64)  # sliding window size for train and infer
-        self.roi_size = (128, 128, 128)  # sliding window size for train and infer
+        self.roi_size = (128,128,128)  # sliding window size for train and infer
 
         # Network
         self.network = UNet(

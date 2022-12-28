@@ -7,7 +7,9 @@ It is originally from the [TCIA CT Lymph Nodes collection](https://wiki.cancerim
 After downloading the server can be started like this (assumes MONAI Label is already installed and working in your python environment).
 
 ```
-monailabel start_server --app ./Monailabel-LNQ/apps/radiology --studies tcia_lymphnode_monailabel --conf models segmentation
+
+monailabel start_server --app apps/radiology --studies datasets/tcia-ln10/imagesTr --conf models segmentation
+
 ```
 
 Note: this is a work-in-progress model that does not yet segment lymph nodes correctly.
@@ -21,7 +23,7 @@ https://www.dropbox.com/sh/ish3ci1h9zkbbhu/AAC84tfHmQ5whW0HF-bqe5vGa?dl=0
 The three subdirectories contain:
 * *tcia-totalseg-ln* The [full]([url](https://github.com/wasserth/TotalSegmentator/blob/master/totalsegmentator/map_to_binary.py#L2-L106)) TotalSegmentator segmentations with the Lymph Node segment added as label 255
 * *tcia-totalseg-ln2* All TotalSegmentator segments are collapsed to the label value 1, and lymph nodes are label value 2
-* *tcia-totalseg-ln10* TotalSegmentator classes reduced to 20 label values according to the mapping below and lymph nodes are label 11
+* *tcia-totalseg-ln10* TotalSegmentator classes reduced to 10 label values according to the mapping below and lymph nodes are label 11
 
 Mapping for ln10 data:
 ```
@@ -32,7 +34,7 @@ Mapping for ln10 data:
             [42, 49, 4], # cardio-pulmonary
             [50, 50, 5], # brain
             [51, 57, 6], # guts
-            [58, 81, 7], # ribs
+            [58, 87, 7], # bones
             [88, 92, 8], # hips
             [93, 93, 9], # face
             [94, 103, 10], # muscles
@@ -49,4 +51,4 @@ All segmentations are in nii.gz format.
 # Acknowledgements
 
 This work is supported by the US National Institutes of Health, National Cancer Institutes grant [5R01CA235589 Lymph Node Quantification System for Multisite Clinical Trials
-](https://reporter.nih.gov/search/9w2EcX30REWk0JwFTROtVw/project-details/10479822).
+](https://reporter.nih.gov/search/9w2EcX30REWk0JwFTROtVw/project-details/10479822).  Additional support provided by the [NCI Imaging Data Commons](https://portal.imaging.datacommons.cancer.gov/).  
