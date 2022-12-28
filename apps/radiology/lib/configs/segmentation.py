@@ -31,7 +31,17 @@ class Segmentation(TaskConfig):
 
         # Labels - DON'T INCLUDE BACKGROUND LABEL
         self.labels = {
-            "lymph node": 1,
+            "organs": 1,
+            "lungs": 2,
+            "spine": 3,
+            "cardiopulmonary": 4,
+            "brain": 5,
+            "guts": 6,
+            "bones": 7,
+            "hips": 8,
+            "face": 9,
+            "muscles": 10,
+            "lymphnodes": 11
         }
 
         # Number of input channels - 4 for BRATS and 1 for spleen
@@ -53,6 +63,7 @@ class Segmentation(TaskConfig):
         self.target_spacing = (1.0, 1.0, 1.0)  # target space for image
         # Setting ROI size should consider max width, height and depth of the images
         self.roi_size = (64, 64, 64)  # sliding window size for train and infer
+        self.roi_size = (128, 128, 128)  # sliding window size for train and infer
 
         # Network
         self.network = UNet(
@@ -73,7 +84,7 @@ class Segmentation(TaskConfig):
             target_spacing=self.target_spacing,
             labels=self.labels,
             preload=strtobool(self.conf.get("preload", "false")),
-            config={"largest_cc": True},
+            config={"largest_cc": False},
         )
         return task
 
