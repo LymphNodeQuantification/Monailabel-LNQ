@@ -1,0 +1,6 @@
+
+conda activate monai
+
+monailabel start_server --app apps/radiology-retrain-2022-12 --studies /mnt/data/datasets/tcia-ln10-retrain-2022-12/imagesTr --conf models segmentation
+
+tensorboard --logdir /mnt/data/Monailabel-LNQ/apps/radiology-retrain-2022-12/model/segmentation/train_01
