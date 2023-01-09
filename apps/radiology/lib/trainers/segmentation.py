@@ -24,6 +24,8 @@ from monai.transforms import (
     EnsureChannelFirstd,
     EnsureTyped,
     LoadImaged,
+    # RandSpatialCropd,
+    # FgBgToIndices,
     RandCropByPosNegLabeld,
     RandFlipd,
     RandRotate90d,
@@ -37,36 +39,43 @@ from monai.transforms import (
 from monailabel.tasks.train.basic_train import BasicTrainTask, Context
 from monailabel.tasks.train.utils import region_wise_metrics
 from monai.optimizers import Novograd
+from monai.metrics import compute_hausdorff_distance
 
 logger = logging.getLogger(__name__)
 
 
-class Segmentation(BasicTrainTask):
+class Segmentation(BasicTrainTask): 
     def __init__(
         self,
         model_dir,
         network,
         roi_size=(64, 64, 64),
         target_spacing=(1.0, 1.0, 1.0),
-        num_samples=4,
+        num_samples=10,
         description="Train Segmentation model",
+        amp=False,
         **kwargs,
     ):
         self._network = network
         self.roi_size = roi_size
         self.target_spacing = target_spacing
         self.num_samples = num_samples
-        super().__init__(model_dir, description, **kwargs)
+        super().__init__(model_dir, description, amp=amp,**kwargs)
 
     def network(self, context: Context):
         return self._network
 
     def optimizer(self, context: Context):
-        #return torch.optim.Adam(context.network.parameters(), lr=1e-3)
-        return torch.optim.AdamW(context.network.parameters(), lr=1e-5, weight_decay=1e-5)
+        # return torch.optim.Adam(context.network.parameters(), lr=1e-3)
+        # return torch.optim.AdamW(context.network.parameters(), lr=1e-4, weight_decay=1e-5)
+        # return torch.optim.AdamW(context.network.parameters(), lr=5e-5, weight_decay=1e-5)
+        # return torch.optim.AdamW(context.network.parameters(), lr=1e-3, weight_decay=1e-5)
+        return torch.optim.Adam(context.network.parameters(), lr=1e-4)
+
 
     def loss_function(self, context: Context):
-        return DiceCELoss(to_onehot_y=True, softmax=True)
+        # return DiceCELoss(to_onehot_y=True, softmax=True)
+        return DiceLoss(to_onehot_y=True, softmax=True)
 
     def lr_scheduler_handler(self, context: Context):
         return None
@@ -80,25 +89,28 @@ class Segmentation(BasicTrainTask):
             EnsureChannelFirstd(keys=("image", "label")),
             NormalizeLabelsInDatasetd(keys="label", label_names=self._labels),  # Specially for missing labels
             Spacingd(keys=("image", "label"), pixdim=self.target_spacing, mode=("bilinear", "nearest")),
-            CropForegroundd(keys=("image", "label"), source_key="image"),
+           # CropForegroundd(keys=("image", "label"), source_key="image"),
             SpatialPadd(keys=("image", "label"), spatial_size=self.roi_size),
-            ScaleIntensityRanged(keys="image", a_min=-400, a_max=1000, b_min=0.0, b_max=1.0, clip=True),
+           # FgBgToIndices(image_threshold=0.0, output_shape=None),
             RandCropByPosNegLabeld(
                 keys=("image", "label"),
                 label_key="label",
                 spatial_size=self.roi_size,
                 pos=1,
-                neg=1,
+                neg=9,
                 num_samples=self.num_samples,
                 image_key="image",
-                image_threshold=0,
+                image_threshold=-400,
+                # allow_smaller=True,
+                allow_missing_keys = True
             ),
+            ScaleIntensityRanged(keys="image", a_min=-400, a_max=1000, b_min=0.0, b_max=1.0, clip=True),
             EnsureTyped(keys=("image", "label"), device=context.device),
-            RandFlipd(keys=("image", "label"), spatial_axis=[0], prob=0.10),
-            RandFlipd(keys=("image", "label"), spatial_axis=[1], prob=0.10),
-            RandFlipd(keys=("image", "label"), spatial_axis=[2], prob=0.10),
-            RandRotate90d(keys=("image", "label"), prob=0.10, max_k=3),
-            RandShiftIntensityd(keys="image", offsets=0.1, prob=0.5),
+            # RandFlipd(keys=("image", "label"), spatial_axis=[0], prob=0.10),
+            # RandFlipd(keys=("image", "label"), spatial_axis=[1], prob=0.10),
+            # RandFlipd(keys=("image", "label"), spatial_axis=[2], prob=0.10),
+            # RandRotate90d(keys=("image", "label"), prob=0.10, max_k=3),
+            # RandShiftIntensityd(keys="image", offsets=0.1, prob=0.5),
             SelectItemsd(keys=("image", "label")),
         ]
 
@@ -120,7 +132,7 @@ class Segmentation(BasicTrainTask):
             NormalizeLabelsInDatasetd(keys="label", label_names=self._labels),  # Specially for missing labels
             Spacingd(keys=("image", "label"), pixdim=self.target_spacing, mode=("bilinear", "nearest")),
             ScaleIntensityRanged(keys="image", a_min=-400, a_max=1000, b_min=0.0, b_max=1.0, clip=True),
-            EnsureTyped(keys=("image", "label"), device=context.device),
+            EnsureTyped(keys=("image", "label")),
             SelectItemsd(keys=("image", "label")),
         ]
 
@@ -138,10 +150,22 @@ class Segmentation(BasicTrainTask):
         return new_label_nums
 
     def train_key_metric(self, context: Context):
-        return region_wise_metrics(self.norm_labels(), self.TRAIN_KEY_METRIC, "train")
+        return region_wise_metrics(self.norm_labels(), "train_mean_dice", "train")
 
     def val_key_metric(self, context: Context):
-        return region_wise_metrics(self.norm_labels(), self.VAL_KEY_METRIC, "val")
+        return region_wise_metrics(self.norm_labels(), "val_mean_dice", "val")
+
+    # '''
+    def train_additional_metrics(self, context: Context):
+        # return compute_hausdorff_distance(from_engine(["pred", "label"]))
+        # return {"train_hd": compute_hausdorff_distance(from_engine(["pred"]), from_engine(["label"]))}
+        return None
+
+    def val_additional_metrics(self, context: Context):
+        # return {"val_hd": compute_hausdorff_distance(from_engine(["pred", "label"]))}
+        return None
+
+    # '''
 
     def train_handlers(self, context: Context):
         handlers = super().train_handlers(context)
